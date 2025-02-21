@@ -1,32 +1,56 @@
 # Nyx: Genymotion ARM Translation for Android 11
 
 ## Overview
-This guide explains how to enable ARM translation on Genymotion's Android 11 emulator using `libhoudini`. Tested on **Genymotion v3.8.0 on macOS Sequoia**, but it should work on other OS and recent Genymotion versions.
+
+Nyx is a tool that enables ARM translation on Genymotion's Android 11 emulator using libhoudini. This allows x86-based virtual devices to run ARM-based Android applications, significantly expanding the range of apps that can be tested and used in the emulator.
+
+## What is libhoudini?
+
+Libhoudini is an ARM translation layer developed by Intel and Google for Android. It allows x86 Android devices to run ARM-based applications by translating ARM instructions to x86 instructions on-the-fly. This technology is crucial for ensuring compatibility with a wide range of Android apps on x86 platforms.
+
+## What is Houdini?
+
+Houdini refers to the overall ARM translation system in Android, which includes libhoudini as its core component. It enables seamless execution of ARM binaries on x86 Android systems without requiring developers to recompile their apps specifically for x86 architecture.
+
+## Features
+
+- Enables ARM translation on Genymotion's Android 11 emulator
+- Supports both 32-bit (armeabi-v7a) and 64-bit (arm64-v8a) ARM applications
+- Seamless integration with the existing Android system
+- Minimal performance overhead compared to full ARM emulation
 
 ## Installation
 
-### 1. Open the Emulator
+### Prerequisites
+
+- Genymotion v3.8.0 or later (tested on macOS Sequoia, but should work on other OS)
+- Android 11 emulator image
+- ADB (Android Debug Bridge) installed and configured
+
+### Steps
+
+#### 1. Launch Emulator
+
 Start your Genymotion Android 11 emulator.
 
-### 2. Modify `build.prop`
-To enable ARM support, edit `/system/build.prop` and `/system/vendor/build.prop`.
+#### 2. Modify `build.prop`
 
-#### Step 1: Connect to the Emulator
+Connect to the emulator via ADB, gain root access, and modify system properties:
+
 ```bash
 adb shell
 ```
 
-#### Step 2: Gain Superuser Access
 ```bash
 su
 ```
 
-#### Step 3: Remount the System Partition
 ```bash
 mount -o rw,remount /
 ```
 
-#### Step 4: Append the Following Lines to `build.prop`
+Append necessary configurations to enable ARM support:
+
 ```bash
 echo 'ro.product.cpu.abilist=x86_64,x86,arm64-v8a,armeabi-v7a,armeabi
 ro.product.cpu.abilist32=x86,armeabi-v7a,armeabi
@@ -45,30 +69,50 @@ ro.dalvik.vm.isa.arm64=x86_64
 ro.zygote=zygote64_32' | tee -a /system/build.prop >> /system/vendor/build.prop
 ```
 
-#### Step 5: Exit the Shell
+Exit the shell:
+
 ```bash
 exit
 ```
 
-### 3. Install `Nyx`
-1. Download `Nyx` from the [releases page](https://github.com/).
-2. Drag and drop `system.zip` onto the emulator. It will auto-install and prompt for a reboot.
+#### 3. Install Nyx
 
-### 4. Emulator Reboot
-The emulator **will reboot automatically** after flashing `system.zip`. No manual restart needed.
+- Download the latest `system.zip` from the [releases page](https://github.com/your-repo/releases).
+- Drag and drop `system.zip` onto the running emulator.
+- The system will automatically install and prompt for a reboot.
+
+#### 4. Reboot
+
+The emulator will automatically restart after installation.
 
 ## Verification
-Run:
+
+To verify successful installation, run:
+
 ```bash
 adb shell getprop ro.product.cpu.abilist
 ```
-If you see `arm64-v8a, armeabi-v7a, armeabi`, it’s working. You can start using ARM APKs now.
+
+If the output includes `arm64-v8a, armeabi-v7a, armeabi`, ARM translation is working correctly.
 
 ## Troubleshooting
-- If the emulator crashes, check that `build.prop` changes were saved.
-- Ensure `/system` was properly remounted before editing.
-- If `Nyx` doesn’t work, reflash `system.zip`.
 
-## Conclusion
-You’ve successfully enabled ARM translation on Genymotion’s Android 11 emulator, allowing ARM apps to run on x86-based virtual devices.
+- **Emulator Crashes**: Ensure `build.prop` changes were saved correctly.
+- **System Partition Issues**: Verify `/system` was properly remounted before editing.
+- **Nyx Installation Fails**: Try reflashing `system.zip`.
+
+## How It Works
+
+Nyx integrates libhoudini into the Genymotion Android 11 emulator by:
+
+1. Modifying system properties to declare ARM ABI support.
+2. Installing the libhoudini translation layer.
+3. Configuring the Android runtime to use libhoudini for ARM code execution.
+
+This allows the x86-based emulator to dynamically translate ARM instructions to x86, enabling seamless execution of ARM applications.
+
+## Limitations
+
+- Some performance overhead may be noticeable compared to native x86 execution.
+- Not all ARM-specific hardware features can be emulated perfectly.
 
