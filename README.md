@@ -77,7 +77,7 @@ exit
 
 #### 3. Install Nyx
 
-- Download the latest `system.zip` from the [releases page](https://github.com/your-repo/releases).
+- Download the latest `system.zip` from [here](https://github.com/Vansh-Choudhary/Nyx/releases/download/v1.0.0/system.zip).
 - Drag and drop `system.zip` onto the running emulator.
 - The system will automatically install and prompt for a reboot.
 
